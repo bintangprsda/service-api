@@ -10,7 +10,8 @@ interface Hospital {
 }
 
 // ✅ Ambil URL API dari environment variable
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/hospitals";
 
 export default function HospitalsPage() {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -23,7 +24,12 @@ export default function HospitalsPage() {
   useEffect(() => {
     async function fetchHospitals() {
       try {
-        const res = await fetch(`${API_URL}/hospitals`);
+        const res = await fetch(`${API_URL}/hospitals`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store", // 🔥 Hindari cache Next.js
+        });
+
         if (!res.ok) throw new Error("Gagal mengambil data rumah sakit.");
         const data: Hospital[] = await res.json();
         setHospitals(data);
@@ -33,6 +39,7 @@ export default function HospitalsPage() {
         );
       }
     }
+
     fetchHospitals();
   }, []);
 
